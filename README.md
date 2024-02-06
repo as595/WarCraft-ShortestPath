@@ -32,4 +32,4 @@ pl.show()
 
 ```
 
-![alt text](https://github.com/as595/WarCraft-ShortestPath/main/figures/warcraft.png)
+![alt text](https://github.com/as595/WarCraft-ShortestPath/blob/d49c465fab5691eadfd752be189cbd8b9e265ea7/figures/warcraft.png)
