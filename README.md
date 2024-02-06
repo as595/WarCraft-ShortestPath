@@ -32,4 +32,4 @@ pl.show()
 
 ```
 
-![alt text](http://url/to/img.png)
+![alt text](https://github.com/as595/WarCraft-ShortestPath/main/figures/warcraft.png)
