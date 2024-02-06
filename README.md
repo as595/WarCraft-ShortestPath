@@ -1,7 +1,7 @@
 # WarCraft-ShortestPath
 Blackbox Deep-learning Combinatorial Solvers
 
-Recreating results from 
+Recreating results from Vlastelica, Marin, et al. "Differentiation of Blackbox Combinatorial Solvers" ICLR 2020 [paper](https://arxiv.org/abs/1912.02175).
 
 ### Warcraft Data
 
