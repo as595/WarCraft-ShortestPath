@@ -1,5 +1,7 @@
 # WarCraft-ShortestPath
 
+**WORK IN PROGRESS**
+
 Recreating results from Vlastelica, Marin, et al. "Differentiation of Blackbox Combinatorial Solvers" ICLR 2020 [paper](https://arxiv.org/abs/1912.02175).
 
 ---
