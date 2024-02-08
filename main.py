@@ -16,10 +16,12 @@ from PIL import Image
 import psutil
 
 from utils import *
-from models import Baseline
+from models import Baseline, Combinatorial
 from WarCraft import Warcraft12x12
 
 quiet = False
+
+torch.set_float32_matmul_precision('medium')
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
@@ -73,9 +75,6 @@ if __name__ == "__main__":
 
 	# initialise the wandb logger and name your wandb project
 	wandb_logger = pl.loggers.WandbLogger(project='warcraft', log_model=True, config=config)
-
-	# wandb will record config
-	wandb.init(project='warcraft', config=config)  # args will be ignored by existing logger
 	wandb_config = wandb.config
 
 # -----------------------------------------------------------------------------
@@ -131,7 +130,10 @@ if __name__ == "__main__":
 	model = locals()[config_dict['model']['model_name']](
 														train_data.metadata["output_features"], 
 														train_data.metadata["num_channels"],
-														config_dict['optimizer']['lr']
+														config_dict['optimizer']['lr'],
+														config_dict['training']['l1_regconst'],
+														config_dict['training']['lambda_val'],
+														config_dict['training']['neighbourhood_fn']
 														).to(device)
 
 	#if not quiet:
@@ -140,7 +142,7 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 
 	# pass wandb_logger to the Trainer 
-	trainer = pl.Trainer(logger=wandb_logger)
+	trainer = pl.Trainer(max_epochs=1000, logger=wandb_logger)
 
 	# train the model
 	trainer.fit(model, train_loader)

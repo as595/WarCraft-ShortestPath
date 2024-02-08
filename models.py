@@ -9,6 +9,7 @@ import wandb
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 
+from dijkstra import ShortestPath, HammingLoss
 
 # -----------------------------------------------------------------------------
 
@@ -16,11 +17,13 @@ class Baseline(pl.LightningModule):
 
 	"""lighning module to reproduce resnet18 baseline"""
 
-	def __init__(self, out_features, in_channels, lr):
+	def __init__(self, out_features, in_channels, lr, l1_regconst, lambda_val, neighbourhood_fn):
 
 		super().__init__()
         
-		self.encoder = torchvision.models.resnet18(pretrained=False, num_classes=out_features)
+		#l1_regconst, lambda_val : not used
+
+		self.encoder = torchvision.models.resnet18(weights=None, num_classes=out_features)
 		del self.encoder.conv1
 		self.encoder.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
         
@@ -52,6 +55,64 @@ class Baseline(pl.LightningModule):
 		return optimizer
 
 
+# -----------------------------------------------------------------------------
+
+class Combinatorial(pl.LightningModule):
+
+	"""lighning module to reproduce resnet18+dijkstra baseline"""
+
+	def __init__(self, out_features, in_channels, lr, l1_regconst, lambda_val, neighbourhood_fn):
+
+		super().__init__()
+        
+		self.neighbourhood_fn = neighbourhood_fn
+		self.lambda_val = lambda_val
+		self.l1_regconst = l1_regconst
+
+		self.encoder = CombResNet18(out_features, in_channels)
+		self.solver = ShortestPath.apply
+
+		self.lr = lr
+
+	def training_step(self, batch, batch_idx):
+        
+		x_train, true_weights, true_shortest_paths = batch
+        
+        # get the output from the CNN:
+		output = self.encoder(x_train)
+		output = torch.abs(output)
+
+		weights = output.reshape(-1, output.shape[-1], output.shape[-1]) # reshape to match the path maps
+		assert len(weights.shape) == 3, f"{str(weights.shape)}" # double check dimensions
+		
+		# pass the predicted weights through the dijkstra algorithm:
+		predicted_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
+		
+		# calculate the Hammingloss
+		criterion = HammingLoss()
+		loss = criterion(predicted_paths, true_shortest_paths)
+		
+		# calculate the regularisation:
+		l1reg = self.l1_regconst * torch.mean(output)
+		loss += l1reg
+		
+		# calculate the accuracy:
+		accuracy = (torch.abs(predicted_paths - true_shortest_paths) < 0.5).to(torch.float32).mean()
+
+		last_suggestion = {
+            "suggested_weights": weights,
+            "suggested_path": predicted_paths
+        }
+
+		self.log("train_loss", loss)
+		self.log("train_accuracy", accuracy)
+
+		return loss
+
+	def configure_optimizers(self):
+		optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+		return optimizer
+
 
 # -----------------------------------------------------------------------------
 
@@ -59,7 +120,7 @@ class CombResNet18(nn.Module):
 
 	def __init__(self, out_features, in_channels):
 		super().__init__()
-		self.resnet_model = torchvision.models.resnet18(pretrained=False, num_classes=out_features)
+		self.resnet_model = torchvision.models.resnet18(weights=None, num_classes=out_features)
 		del self.resnet_model.conv1
 		self.resnet_model.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
 		output_shape = (int(sqrt(out_features)), int(sqrt(out_features)))
@@ -81,43 +142,3 @@ class CombResNet18(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-
-class Dijkstra():
-	def __init__(self, l1_regconst, lambda_val, **kwargs):
-		super().__init__(**kwargs)
-		self.l1_regconst = l1_regconst
-		self.lambda_val = lambda_val
-		self.solver = ShortestPath(lambda_val=lambda_val, neighbourhood_fn=self.neighbourhood_fn)
-		self.loss_fn = HammingLoss()
-
-		print("META:", self.metadata)
-	def build_model(self, model_name, arch_params):
-		self.model = get_model(
-			model_name, out_features=self.metadata["output_features"], in_channels=self.metadata["num_channels"], arch_params=arch_params
-			)
-
-	def forward_pass(self, input, true_shortest_paths, train, i):
-		output = self.model(input)
-		# make grid weights positive
-		output = torch.abs(output)
-		weights = output.reshape(-1, output.shape[-1], output.shape[-1])
-
-		if i == 0 and not train:
-			print(output[0])
-		assert len(weights.shape) == 3, f"{str(weights.shape)}"
-		shortest_paths = self.solver(weights)
-
-		loss = self.loss_fn(shortest_paths, true_shortest_paths)
-
-		logger = self.train_logger if train else self.val_logger
-
-		last_suggestion = {
-				"suggested_weights": weights,
-				"suggested_path": shortest_paths
-				}
-
-		accuracy = (torch.abs(shortest_paths - true_shortest_paths) < 0.5).to(torch.float32).mean()
-		extra_loss = self.l1_regconst * torch.mean(output)
-		loss += extra_loss
-
-		return loss, accuracy, last_suggestion
