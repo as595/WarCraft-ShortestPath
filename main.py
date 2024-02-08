@@ -104,6 +104,7 @@ if __name__ == "__main__":
 		normalise,
 		])
 
+	print(config_dict['data']['datadir'])
 	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=True, transform=transform)
 	
 	# split into train:validation
