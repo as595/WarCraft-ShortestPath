@@ -7,6 +7,7 @@ from torch.utils.data import Subset
 import wandb
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import LearningRateMonitor
 
 import numpy as np
 import random
@@ -128,15 +129,17 @@ if __name__ == "__main__":
 
 # -----------------------------------------------------------------------------
 
-	# pass wandb_logger to the Trainer 
 
 	if config_dict['model']['model_name']=='Combinatorial':
 		ddp_strategy = 'ddp_find_unused_parameters_true' # strategy flag required for custom autograd fnc
 	else:
 		ddp_strategy = 'ddp' # default
 
+	lr_monitor = LearningRateMonitor(logging_interval='step')
+
 	trainer = pl.Trainer(max_epochs=config_dict['training']['num_epochs'], 
-						 strategy=ddp_strategy,  
+						 strategy=ddp_strategy,
+						 callbacks=[lr_monitor],  
 						 logger=wandb_logger) 
 
 	# train the model
