@@ -78,16 +78,7 @@ if __name__ == "__main__":
 	os.makedirs(model_dir, exist_ok=True)
 
 	num_cpus = psutil.cpu_count(logical=True)
-	#print(num_cpus)
-	if use_ray:
-		ray.init(
-			num_cpus=num_cpus,
-			logging_level=WARNING,
-			ignore_reinit_error=True,
-			redis_max_memory=10 ** 9,
-			log_to_driver=False,
-			**ray_params)
-
+	
 # -----------------------------------------------------------------------------
 
 	# data transforms
