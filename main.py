@@ -147,7 +147,9 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 
 	# pass wandb_logger to the Trainer 
-	trainer = pl.Trainer(max_epochs=1000, strategy='ddp_find_unused_parameters_true', logger=wandb_logger) # strategy flag required for custom autograd fnc
+	trainer = pl.Trainer(max_epochs=config_dict['training']['num_epochs'], 
+						 strategy='ddp_find_unused_parameters_true', 		# strategy flag required for custom autograd fnc
+						 logger=wandb_logger) 
 
 	# train the model
 	trainer.fit(model, train_loader)
