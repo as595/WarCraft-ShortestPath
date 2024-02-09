@@ -37,3 +37,17 @@ pl.show()
 ```
 
 ![alt text](https://github.com/as595/WarCraft-ShortestPath/blob/d49c465fab5691eadfd752be189cbd8b9e265ea7/figures/warcraft.png)
+
+---
+### Baseline Model
+
+The baseline model uses ResNet18, which is trained to predict the shortest path directly from the input WarCraft Images (i.e. not from the weights). This model should train to 100% (training) accuracy in a few epochs. The parameters are specified in a `config` file: `configs/baseline.cfg`.
+
+To run:
+
+```python
+python main.py --config ./configs/baseline.cfg
+```
+
+---
+### Combinatorial Model
