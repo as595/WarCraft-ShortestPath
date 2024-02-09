@@ -51,8 +51,9 @@ class Baseline(pl.LightningModule):
 		return loss
 
 	def configure_optimizers(self):
-		optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-		return optimizer
+		optimizer    = torch.optim.Adam(self.parameters(), lr=self.lr)
+		lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,40], gamma=0.1)
+		return [optimizer], [lr_scheduler]
 
 
 # -----------------------------------------------------------------------------
@@ -111,7 +112,8 @@ class Combinatorial(pl.LightningModule):
 
 	def configure_optimizers(self):
 		optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-		return optimizer
+		lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,40], gamma=0.1)
+		return [optimizer], [lr_scheduler]
 
 
 # -----------------------------------------------------------------------------

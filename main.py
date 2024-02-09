@@ -129,8 +129,14 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 
 	# pass wandb_logger to the Trainer 
+
+	if config_dict['model']['model_name']=='Combinatorial':
+		ddp_strategy = 'ddp_find_unused_parameters_true' # strategy flag required for custom autograd fnc
+	else:
+		ddp_strategy = 'ddp' # default
+
 	trainer = pl.Trainer(max_epochs=config_dict['training']['num_epochs'], 
-						 strategy='ddp_find_unused_parameters_true', 		# strategy flag required for custom autograd fnc
+						 strategy=ddp_strategy,  
 						 logger=wandb_logger) 
 
 	# train the model
@@ -138,6 +144,5 @@ if __name__ == "__main__":
 
 # -----------------------------------------------------------------------------
 
-	if use_ray:
-		ray.shutdown()
+	wandb.finish()
 
