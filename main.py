@@ -91,8 +91,8 @@ if __name__ == "__main__":
 		normalise,
 		])
 
-	print(config_dict['data']['datadir'])
 	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=True, transform=transform)
+	test_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=False, transform=transform)
 	
 	# split into train:validation
 	n_train = 10000
@@ -110,7 +110,19 @@ if __name__ == "__main__":
 												persistent_workers=True
 												)
 
-	test_loader = torch.utils.data.DataLoader(valid_sampler, batch_size=config_dict['training']['batch_size'], shuffle=True)
+	valid_loader = torch.utils.data.DataLoader(valid_sampler, 
+												batch_size=config_dict['training']['batch_size'], 
+												shuffle=False, 
+												num_workers=num_cpus-1,
+												persistent_workers=True
+												)
+
+	test_loader = torch.utils.data.DataLoader(test_data, 
+												batch_size=len(test_data), 
+												shuffle=False, 
+												num_workers=1,
+												persistent_workers=True
+												)
 
 # -----------------------------------------------------------------------------
 
@@ -135,15 +147,21 @@ if __name__ == "__main__":
 	else:
 		ddp_strategy = 'ddp' # default
 
-	lr_monitor = LearningRateMonitor(logging_interval='step')
+	lr_monitor = LearningRateMonitor(logging_interval='epoch')
 
 	trainer = pl.Trainer(max_epochs=config_dict['training']['num_epochs'], 
 						 strategy=ddp_strategy,
-						 callbacks=[lr_monitor],  
+						 callbacks=[lr_monitor],
+						 num_sanity_val_steps=0, # 0 : turn off validation sanity check  
 						 logger=wandb_logger) 
 
 	# train the model
-	trainer.fit(model, train_loader)
+	trainer.fit(model, train_loader, valid_loader)
+
+# -----------------------------------------------------------------------------
+
+
+	trainer.test(model, test_loader, ckpt_path=None) # test final epoch model
 
 # -----------------------------------------------------------------------------
 

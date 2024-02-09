@@ -50,6 +50,43 @@ class Baseline(pl.LightningModule):
 
 		return loss
 
+
+	def validation_step(self, batch, batch_idx):
+
+		x_train, y_train, z_train = batch
+        
+		z_pred = self.encoder(x_train)
+		z_pred = torch.sigmoid(z_pred)
+
+		flat_target = z_train.view(z_train.size()[0], -1)
+        
+		criterion = torch.nn.BCELoss()
+		loss = criterion(z_pred, flat_target.to(dtype=torch.float)).mean()
+		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum()
+
+		self.log_dict({'val_loss': loss, 'val_acc': accuracy}, sync_dist=True)
+
+		return 
+
+
+	def test_step(self, batch, batch_idx):
+
+		x_train, y_train, z_train = batch
+        
+		z_pred = self.encoder(x_train)
+		z_pred = torch.sigmoid(z_pred)
+
+		flat_target = z_train.view(z_train.size()[0], -1)
+        
+		criterion = torch.nn.BCELoss()
+		loss = criterion(z_pred, flat_target.to(dtype=torch.float)).mean()
+		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum()
+
+		self.log_dict({'test_loss': loss, 'test_acc': accuracy}, sync_dist=True)
+
+		return
+		
+
 	def configure_optimizers(self):
 		optimizer    = torch.optim.Adam(self.parameters(), lr=self.lr)
 		lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,40], gamma=0.1)
