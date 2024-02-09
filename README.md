@@ -41,7 +41,7 @@ pl.show()
 ---
 ### Baseline Model
 
-The baseline model uses ResNet18, which is trained to predict the shortest path directly from the input WarCraft Images (i.e. not from the weights). This model should train to 100% (training) accuracy in a few epochs. The parameters are specified in a `config` file: `configs/baseline.cfg`.
+The baseline model uses [PyTorch ResNet18](https://pytorch.org/hub/pytorch_vision_resnet/), which is trained from scratch to predict the shortest path directly from the input WarCraft Images (i.e. not from the weights). This model should train to 100% (training) accuracy in a few epochs. The parameters are specified in a `config` file: `configs/baseline.cfg`.
 
 To run:
 
