@@ -56,6 +56,7 @@ Results:
 | Training accuracy | 301   | 283   | 301   | 283   |
 | Test accuracy | 301   | 283   | 301   | 283   |
 
+*Note: the reported values are "perfect match accuracy".*
 ---
 ### Combinatorial Model
 
