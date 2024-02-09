@@ -35,23 +35,14 @@ torch.set_float32_matmul_precision('medium')
 vars = parse_args()
 config_dict, config = parse_config(vars['config'])
 
-model_dir     	= config_dict['top level']['model_dir']
-seed       		= config_dict['top level']['seed']
-
-num_epochs   	= config_dict['top level']['num_epochs']
-evaluate_every  = config_dict['top level']['evaluate_every']
-
-# optional parameters:
-use_ray 					= config_dict['optional']['use_ray']
-fast_forward_training 		= config_dict['optional']['fast_forward_training']
-
-save_visualizations	= config_dict['top level']['save_visualizations']
+model_dir = config_dict['top level']['model_dir']
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+seed = config_dict['top level']['seed']
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
