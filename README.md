@@ -2,6 +2,8 @@
 
 **WORK IN PROGRESS**
 
+Demonstrating how to embed a combinatorial solver into a deep learning model.
+
 Recreating results from Vlastelica, Marin, et al. "Differentiation of Blackbox Combinatorial Solvers" ICLR 2020 [paper](https://arxiv.org/abs/1912.02175).
 
 This implementation uses [PyTorch Lightning](https://lightning.ai/docs/pytorch/stable/) and [Weights and Biases](https://wandb.ai).
