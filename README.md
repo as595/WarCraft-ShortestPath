@@ -52,7 +52,7 @@ python main.py --config ./configs/baseline.cfg
 ---
 ### Combinatorial Model
 
-The baseline model uses a modified version of [PyTorch ResNet18](https://pytorch.org/hub/pytorch_vision_resnet/), which outputs a set of learned pixel weights for the input WarCraft Images. These weights are then used as input to a combinatorial solver (Dijkstra) to calculate the shortest path. The predicted shortest path is then compared to the true shortest path in order to calculate the loss. The shortest path calculation using the combinatorial solver step is written as a [custom autograd function for PyTorch](https://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_custom_function.html) that implements the loss smoothing from [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175). 
+The combinatorial model uses a modified version of [PyTorch ResNet18](https://pytorch.org/hub/pytorch_vision_resnet/), which outputs a set of learned pixel weights for the input WarCraft Images. These weights are then used as input to a combinatorial solver (Dijkstra) to calculate the shortest path. The predicted shortest path is then compared to the true shortest path in order to calculate the loss. The shortest path calculation using the combinatorial solver step is written as a [custom autograd function for PyTorch](https://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_custom_function.html) that implements the loss smoothing from [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175). 
 
 Note: the custom autograd function implemented here uses a static method as the approch in Vlastelica's original code is now deprecated.
 
