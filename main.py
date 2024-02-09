@@ -19,6 +19,11 @@ from utils import *
 from models import Baseline, Combinatorial
 from WarCraft import Warcraft12x12
 
+import platform
+
+if platform.system()=='Darwin':
+	os.environ["GLOO_SOCKET_IFNAME"] = "en0"
+
 quiet = False
 
 torch.set_float32_matmul_precision('medium')
@@ -142,7 +147,7 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 
 	# pass wandb_logger to the Trainer 
-	trainer = pl.Trainer(max_epochs=1000, logger=wandb_logger)
+	trainer = pl.Trainer(max_epochs=1000, strategy='ddp_find_unused_parameters_true', logger=wandb_logger) # strategy flag required for custom autograd fnc
 
 	# train the model
 	trainer.fit(model, train_loader)
