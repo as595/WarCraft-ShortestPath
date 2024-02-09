@@ -72,3 +72,9 @@ To run:
 ```python
 python main.py --config ./configs/combinatorial.cfg
 ```
+
+---
+### Notes
+
+* What happens to performance if you don't normalise the input data?
+* What happens if you don't implement the learning rate scheduler steps at epochs 30 and 40?
