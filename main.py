@@ -29,30 +29,27 @@ quiet = False
 
 torch.set_float32_matmul_precision('medium')
 
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-# extract information from config file:
-
-vars = parse_args()
-config_dict, config = parse_config(vars['config'])
-
-model_dir = config_dict['top level']['model_dir']
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-seed = config_dict['top level']['seed']
-random.seed(seed)
-torch.manual_seed(seed)
-torch.cuda.manual_seed(seed)
-np.random.seed(seed)
-
 # -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    
+
+# -----------------------------------------------------------------------------
+# extract config info & set the random seed
+
+	args = parse_args()
+	
+	random_state = args['random_state']
+	pl.seed_everything(random_state)
+
+	config_dict, config = parse_config(args['config'])
+	model_dir = config_dict['top level']['model_dir']
+
 # -----------------------------------------------------------------------------
 # lightning stuff
 

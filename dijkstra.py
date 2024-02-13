@@ -4,7 +4,6 @@ import torch
 from functools import partial
 from comb_utils import get_neighbourhood_func
 from collections import namedtuple
-from utils import maybe_parallelize
 
 DijkstraOutput = namedtuple("DijkstraOutput", ["shortest_path", "is_unique", "transitions"])
 

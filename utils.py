@@ -1,6 +1,7 @@
 import argparse
 import configparser as ConfigParser
 import ast
+import numpy as np
 #import ray
 
 # ----------------------------------------------------------
@@ -8,9 +9,11 @@ import ast
 def parse_args():
     """
         Parse the command line arguments
-        """
+	"""
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-C','--config', default="myconfig.txt", required=True, help='Name of the input config file')
+    parser.add_argument('-S','--seed', dest='random_state', default=42, type=int)
     
     args, __ = parser.parse_known_args()
     
@@ -44,13 +47,3 @@ def parse_config(filename):
 
 # -----------------------------------------------------------
 
-def maybe_parallelize(function, arg_list):
-    if ray.is_initialized():
-        ray_fn = ray.remote(function)
-        return ray.get([ray_fn.remote(arg) for arg in arg_list])
-    else:
-        return [function(arg) for arg in arg_list]
-
-    return
-
-# -----------------------------------------------------------
