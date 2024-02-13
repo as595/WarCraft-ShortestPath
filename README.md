@@ -55,8 +55,8 @@ Results:
 
 |  | 12x12 | 18x18 | 24x24 | 30x30 |
 | :---:   | :---: | :---: | :---: | :---: |
-| Training accuracy | 100.0+-0.0%   | 283   | 301   | 283   |
-| Test accuracy | 38.7+/-2.7%   | 283   | 301   | 283   |
+| Training accuracy | 100.0&pm;0.0%   | 283   | 301   | 283   |
+| Test accuracy | 38.7&pm;2.7%   | 283   | 301   | 283   |
 
 *Note: the reported values are "perfect match accuracy".*
 
