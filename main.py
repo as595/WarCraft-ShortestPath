@@ -120,7 +120,7 @@ if __name__ == "__main__":
 	test_loader = torch.utils.data.DataLoader(test_data, 
 												batch_size=len(test_data), 
 												shuffle=False, 
-												num_workers=1,
+												num_workers=num_cpus-1,
 												persistent_workers=True
 												)
 

@@ -11,11 +11,12 @@ from pytorch_lightning.loggers import WandbLogger
 
 from dijkstra import ShortestPath, HammingLoss
 
+
 # -----------------------------------------------------------------------------
 
 class Baseline(pl.LightningModule):
 
-	"""lighning module to reproduce resnet18 baseline"""
+	"""lightning module to reproduce resnet18 baseline"""
 
 	def __init__(self, out_features, in_channels, lr, l1_regconst, lambda_val, neighbourhood_fn):
 
@@ -73,19 +74,17 @@ class Baseline(pl.LightningModule):
 
 		x_train, y_train, z_train = batch
         
-		z_pred = self.encoder(x_train)
-		z_pred = torch.sigmoid(z_pred)
+		suggested_paths = self.encoder(x_train)
+		suggested_paths = torch.sigmoid(suggested_paths).round()
 
-		flat_target = z_train.view(z_train.size()[0], -1)
-        
-		criterion = torch.nn.BCELoss()
-		loss = criterion(z_pred, flat_target.to(dtype=torch.float)).mean()
-		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum()
+		true_paths = z_train.view(z_train.size()[0], -1)
 
-		self.log_dict({'test_loss': loss, 'test_acc': accuracy}, sync_dist=True)
+		accuracy = torch.all(torch.eq(true_paths, suggested_paths),  dim=1).to(torch.float32).mean()
+
+		self.log('test_acc', accuracy)
 
 		return
-		
+
 
 	def configure_optimizers(self):
 		optimizer    = torch.optim.Adam(self.parameters(), lr=self.lr)
@@ -97,7 +96,7 @@ class Baseline(pl.LightningModule):
 
 class Combinatorial(pl.LightningModule):
 
-	"""lighning module to reproduce resnet18+dijkstra baseline"""
+	"""lightning module to reproduce resnet18+dijkstra baseline"""
 
 	def __init__(self, out_features, in_channels, lr, l1_regconst, lambda_val, neighbourhood_fn):
 
@@ -146,6 +145,29 @@ class Combinatorial(pl.LightningModule):
 		self.log("train_accuracy", accuracy)
 
 		return loss
+
+
+	def test_step(self, batch, batch_idx):
+
+		x_train, y_train, true_shortest_paths = batch
+        
+		# get the output from the CNN:
+		output = self.encoder(x_train)
+		output = torch.abs(output)
+
+		weights = output.reshape(-1, output.shape[-1], output.shape[-1]) # reshape to match the path maps
+		assert len(weights.shape) == 3, f"{str(weights.shape)}" # double check dimensions
+		
+		# pass the predicted weights through the dijkstra algorithm:
+		predicted_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
+        
+		# calculate the accuracy:
+		accuracy = (torch.abs(predicted_paths - true_shortest_paths) < 0.5).to(torch.float32).mean()
+
+		self.log('test_acc', accuracy)
+
+		return
+
 
 	def configure_optimizers(self):
 		optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
