@@ -18,7 +18,7 @@ import psutil
 
 from utils import *
 from models import Baseline, Combinatorial
-from WarCraft import Warcraft12x12
+from WarCraft import Warcraft12x12, Warcraft18x18, Warcraft24x24, Warcraft30x30
 
 import platform
 
