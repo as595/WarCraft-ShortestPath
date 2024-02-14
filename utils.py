@@ -50,7 +50,8 @@ def parse_config(filename):
 
 def calc_cost(weights, path):
 
-	cost = torch.sum(weights[path > 0])
+	mask = path > 0
+	cost = torch.sum(weights * mask , dim=1)
 
 	return cost
 
@@ -69,7 +70,7 @@ def exact_cost_accuracy(true_paths, suggested_paths, weights):
 	eps = 1e-6
 	true_costs = calc_cost(weights, true_paths)
 	pred_costs = calc_cost(weights, suggested_paths)
-
+	
 	accuracy = (torch.abs(true_costs - pred_costs) < eps).to(torch.float32).mean()
 
 	return accuracy

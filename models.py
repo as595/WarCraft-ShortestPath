@@ -82,6 +82,7 @@ class Baseline(pl.LightningModule):
 
 		accuracy = torch.all(torch.eq(true_paths, suggested_paths),  dim=1).to(torch.float32).mean()
 		print(accuracy)
+		
 		accuracy = exact_match_accuracy(true_paths, suggested_paths)
 		print(accuracy)
 
@@ -89,6 +90,7 @@ class Baseline(pl.LightningModule):
 		accuracy = exact_cost_accuracy(true_paths, suggested_paths, weights)
 		print(accuracy)
 
+		accuracy = torch.all(torch.eq(true_paths, suggested_paths),  dim=1).to(torch.float32).mean()
 		self.log('test_acc', accuracy)
 
 		return

@@ -58,18 +58,15 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 # lightning stuff
 
-	weight_decay = 0.05  # decreased
-	batch_size = 32
-	dropout = 0.5
-	lr_decay = 0.75
-	learning_rate = 5e-4
+	weight_decay = config_dict['training']['l1_regconst'] 
+	batch_size = config_dict['training']['batch_size']
+	learning_rate = config_dict['optimizer']['lr']
 
 	config = {
 			'weight_decay': weight_decay,
-			'dropout': dropout,
-			'lr_decay': lr_decay,
 			'learning_rate': learning_rate,
-			'batch_size': batch_size
+			'batch_size': batch_size,
+			'seed': random_state
 			}
 
 	# initialise the wandb logger and name your wandb project
@@ -96,26 +93,17 @@ if __name__ == "__main__":
 	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=True, transform=transform)
 	test_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=False, transform=transform)
 	
-	# split into train:validation
+	# take 10k samples for training; 1k samples for test
 	n_train = 10000
 	indices = list(range(len(train_data)))
-	train_indices, val_indices = indices[:n_train], indices[n_train:n_train+1000]
 	
-	train_sampler = Subset(train_data, train_indices) # 10k samples
-	valid_sampler = Subset(train_data, val_indices)   # 1k samples
-	test_sampler = Subset(test_data, indices[:1000])  # 1k samples
+	train_sampler = Subset(train_data, indices[:n_train]) # 10k samples
+	test_sampler = Subset(test_data, indices[:1000])    # 1k samples
 
 	# specify data loaders for training and validation:
 	train_loader = torch.utils.data.DataLoader(train_sampler, 
 												batch_size=config_dict['training']['batch_size'], 
 												shuffle=True, 
-												num_workers=num_cpus-1,
-												persistent_workers=True
-												)
-
-	valid_loader = torch.utils.data.DataLoader(valid_sampler, 
-												batch_size=config_dict['training']['batch_size'], 
-												shuffle=False, 
 												num_workers=num_cpus-1,
 												persistent_workers=True
 												)
@@ -161,7 +149,7 @@ if __name__ == "__main__":
 						 logger=wandb_logger) 
 
 	# train the model
-	trainer.fit(model, train_loader, valid_loader)
+	trainer.fit(model, train_loader)
 	
 # -----------------------------------------------------------------------------
 
