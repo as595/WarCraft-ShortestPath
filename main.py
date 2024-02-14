@@ -85,8 +85,8 @@ if __name__ == "__main__":
 
 	# data transforms
 	totensor = transforms.ToTensor()
-	normalise= transforms.Normalize((config_dict['data']['datamean'],), (config_dict['data']['datastd'],))
-
+	normalise= transforms.Normalize(config_dict['data']['datamean'], config_dict['data']['datastd'])
+	
 	transform = transforms.Compose([
 		totensor, 
 		normalise,
