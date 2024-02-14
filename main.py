@@ -35,8 +35,8 @@ torch.set_float32_matmul_precision('medium')
 
 if torch.cuda.is_available():
 	device='cuda'
-elif torch.backends.mps.is_built():
-	device='mps'
+#elif torch.backends.mps.is_built():
+#	device='mps'
 else:
 	device='cpu'
 
@@ -99,10 +99,11 @@ if __name__ == "__main__":
 	# split into train:validation
 	n_train = 10000
 	indices = list(range(len(train_data)))
-	train_indices, val_indices = indices[:n_train], indices[n_train:]
+	train_indices, val_indices = indices[:n_train], indices[n_train:n_train+1000]
 	
-	train_sampler = Subset(train_data, train_indices)
-	valid_sampler = Subset(train_data, val_indices)
+	train_sampler = Subset(train_data, train_indices) # 10k samples
+	valid_sampler = Subset(train_data, val_indices)   # 1k samples
+	test_sampler = Subset(test_data, indices[:1000])  # 1k samples
 
 	# specify data loaders for training and validation:
 	train_loader = torch.utils.data.DataLoader(train_sampler, 
@@ -119,7 +120,7 @@ if __name__ == "__main__":
 												persistent_workers=True
 												)
 
-	test_loader = torch.utils.data.DataLoader(test_data, 
+	test_loader = torch.utils.data.DataLoader(test_sampler, 
 												batch_size=len(test_data), 
 												shuffle=False, 
 												num_workers=num_cpus-1,
@@ -155,11 +156,13 @@ if __name__ == "__main__":
 						 strategy=ddp_strategy,
 						 callbacks=[lr_monitor],
 						 num_sanity_val_steps=0, # 0 : turn off validation sanity check  
+						 accelerator=device, 
+						 devices=1,
 						 logger=wandb_logger) 
 
 	# train the model
 	trainer.fit(model, train_loader, valid_loader)
-
+	
 # -----------------------------------------------------------------------------
 
 
