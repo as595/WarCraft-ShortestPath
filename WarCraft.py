@@ -240,7 +240,7 @@ class Warcraft18x18(data.Dataset):
                 elif 'shortest_paths' in file_name:
                     self.paths.append(entry)
 
-        self.data = np.vstack(self.data).reshape(-1, 3, 96, 96)
+        self.data = np.vstack(self.data).reshape(-1, 3, 144, 144)
         self.data = self.data.transpose((0, 2, 3, 1))
         
         self.weights = np.vstack(self.weights).reshape(-1, 18, 18)
@@ -391,7 +391,7 @@ class Warcraft24x24(data.Dataset):
                 elif 'shortest_paths' in file_name:
                     self.paths.append(entry)
 
-        self.data = np.vstack(self.data).reshape(-1, 3, 96, 96)
+        self.data = np.vstack(self.data).reshape(-1, 3, 192, 192)
         self.data = self.data.transpose((0, 2, 3, 1))
         
         self.weights = np.vstack(self.weights).reshape(-1, 24, 24)
@@ -542,7 +542,7 @@ class Warcraft30x30(data.Dataset):
                 elif 'shortest_paths' in file_name:
                     self.paths.append(entry)
 
-        self.data = np.vstack(self.data).reshape(-1, 3, 96, 96)
+        self.data = np.vstack(self.data).reshape(-1, 3, 240, 240)
         self.data = self.data.transpose((0, 2, 3, 1))
         
         self.weights = np.vstack(self.weights).reshape(-1, 30, 30)
