@@ -10,6 +10,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 
 from dijkstra import ShortestPath, HammingLoss
+from utils import exact_match_accuracy, exact_cost_accuracy
 
 
 # -----------------------------------------------------------------------------
@@ -80,6 +81,13 @@ class Baseline(pl.LightningModule):
 		true_paths = z_train.view(z_train.size()[0], -1)
 
 		accuracy = torch.all(torch.eq(true_paths, suggested_paths),  dim=1).to(torch.float32).mean()
+		print(accuracy)
+		accuracy = exact_match_accuracy(true_paths, suggested_paths)
+		print(accuracy)
+
+		weights = y_train.view(y_train.size()[0], -1)
+		accuracy = exact_cost_accuracy(true_paths, suggested_paths, weights)
+		print(accuracy)
 
 		self.log('test_acc', accuracy)
 
@@ -162,8 +170,7 @@ class Combinatorial(pl.LightningModule):
 		predicted_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
         
 		# calculate the accuracy:
-		accuracy = (torch.abs(predicted_paths - true_shortest_paths) < 0.5).to(torch.float32).mean()
-
+		accuracy = torch.all(torch.eq(true_shortest_paths, predicted_paths),  dim=1).to(torch.float32).mean()
 		self.log('test_acc', accuracy)
 
 		return

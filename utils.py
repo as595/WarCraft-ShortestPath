@@ -1,3 +1,4 @@
+import torch
 import argparse
 import configparser as ConfigParser
 import ast
@@ -47,3 +48,28 @@ def parse_config(filename):
 
 # -----------------------------------------------------------
 
+def calc_cost(weights, path):
+
+	cost = torch.sum(weights[path > 0])
+
+	return cost
+
+# -----------------------------------------------------------
+
+def exact_match_accuracy(true_paths, suggested_paths):
+
+	accuracy = torch.all(torch.eq(true_paths, suggested_paths),  dim=1).to(torch.float32).mean()
+
+	return accuracy
+
+# -----------------------------------------------------------
+
+def exact_cost_accuracy(true_paths, suggested_paths, weights):
+
+	eps = 1e-6
+	true_costs = calc_cost(weights, true_paths)
+	pred_costs = calc_cost(weights, suggested_paths)
+
+	accuracy = (torch.abs(true_costs - pred_costs) < eps).to(torch.float32).mean()
+
+	return accuracy
