@@ -33,7 +33,12 @@ torch.set_float32_matmul_precision('medium')
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+if torch.cuda.is_available():
+	device='cuda'
+elif torch.backends.mps.is_built():
+	device='mps'
+else:
+	device='cpu'
 
 # -----------------------------------------------------------------------------
 
@@ -74,7 +79,6 @@ if __name__ == "__main__":
 # -----------------------------------------------------------------------------
 
 	os.makedirs(model_dir, exist_ok=True)
-
 	num_cpus = psutil.cpu_count(logical=True)
 	
 # -----------------------------------------------------------------------------
@@ -88,6 +92,7 @@ if __name__ == "__main__":
 		normalise,
 		])
 
+	print("Data: {}".format(config_dict['data']['dataset']))
 	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=True, transform=transform)
 	test_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=False, transform=transform)
 	
@@ -123,7 +128,7 @@ if __name__ == "__main__":
 
 # -----------------------------------------------------------------------------
 
-	
+	print("Model: {} ({})".format(config_dict['model']['model_name'], device))
 	model = locals()[config_dict['model']['model_name']](
 														train_data.metadata["output_features"], 
 														train_data.metadata["num_channels"],
