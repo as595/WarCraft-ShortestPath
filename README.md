@@ -64,7 +64,7 @@ Results:
 
 Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. *z*-score normalisation is applied to all inputs using the mean and standard deviation of the 10k training images, values for these parameters can be found in the `baseline.cfg` file.
 
-Training takes ~9 sec/epoch on an A100, and ~7 min/epoch on a CPU.
+Training takes ~10 sec/epoch on an A100, and ~7 min/epoch on a CPU.
 
 ---
 ### Combinatorial Model
