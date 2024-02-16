@@ -58,7 +58,7 @@ Results:
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
 | Test accuracy | 38.7&pm;2.7%   |  6.0&pm;0.4%  | 0.3&pm;0.1%   | 283   |
 
-*Note: the reported values are "perfect match accuracy".*
+*Note: the reported values are "perfect match accuracy", calculated over 10 separately seeded runs.*
 
 #### Training details
 
