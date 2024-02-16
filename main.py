@@ -94,11 +94,12 @@ if __name__ == "__main__":
 	test_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=False, transform=transform)
 	
 	# take 10k samples for training; 1k samples for test
-	n_train = 10000
+	n_train = config_dict['data']['ntrain']
+	n_test = config_dict['data']['ntest']
 	indices = list(range(len(train_data)))
 	
 	train_sampler = Subset(train_data, indices[:n_train]) # 10k samples
-	test_sampler = Subset(test_data, indices[:1000])    # 1k samples
+	test_sampler = Subset(test_data, indices[:n_test])    # 1k samples
 
 	# specify data loaders for training and validation:
 	train_loader = torch.utils.data.DataLoader(train_sampler, 
@@ -109,7 +110,7 @@ if __name__ == "__main__":
 												)
 
 	test_loader = torch.utils.data.DataLoader(test_sampler, 
-												batch_size=len(test_data), 
+												batch_size=len(test_sampler), 
 												shuffle=False, 
 												num_workers=num_cpus-1,
 												persistent_workers=True

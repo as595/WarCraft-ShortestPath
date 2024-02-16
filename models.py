@@ -42,7 +42,7 @@ class Baseline(pl.LightningModule):
         
 		criterion = torch.nn.BCELoss()
 		loss = criterion(z_pred, flat_target.to(dtype=torch.float)).mean()
-		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum()
+		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum() # perfect match accuracy
 
 		suggested_path = z_pred.view(z_train.shape).round()
 		last_suggestion = {"vertex_costs": None, "suggested_path": suggested_path}
@@ -52,47 +52,33 @@ class Baseline(pl.LightningModule):
 
 		return loss
 
-
-	def validation_step(self, batch, batch_idx):
-
-		x_train, y_train, z_train = batch
-        
-		z_pred = self.encoder(x_train)
-		z_pred = torch.sigmoid(z_pred)
-
-		flat_target = z_train.view(z_train.size()[0], -1)
-        
-		criterion = torch.nn.BCELoss()
-		loss = criterion(z_pred, flat_target.to(dtype=torch.float)).mean()
-		accuracy = (z_pred.round() * flat_target).sum() / flat_target.sum()
-
-		self.log_dict({'val_loss': loss, 'val_acc': accuracy}, sync_dist=True)
-
-		return 
-
-
 	def test_step(self, batch, batch_idx):
 
-		x_train, y_train, z_train = batch
+		x_test, y_test, z_test = batch
         
-		suggested_paths = self.encoder(x_train)
+		suggested_paths = self.encoder(x_test)
 		suggested_paths = torch.sigmoid(suggested_paths).round()
 
-		true_paths = z_train.view(z_train.size()[0], -1)
+		true_paths = z_test.view(z_test.size()[0], -1)
 
 		accuracy = exact_match_accuracy(true_paths, suggested_paths)
 		self.log('exact match accuracy [test]', accuracy)
 
-		weights = y_train.view(y_train.size()[0], -1)
-		accuracy = exact_cost_accuracy(true_paths, suggested_paths, weights)
+		true_weights = y_test.view(y_test.size()[0], -1)
+		accuracy = exact_cost_accuracy(true_paths, suggested_paths, true_weights)
 		self.log('exact cost accuracy [test]', accuracy)
 
 		return
 
 
 	def configure_optimizers(self):
+
+		# should update this at some point to take optimizer from config file
 		optimizer    = torch.optim.Adam(self.parameters(), lr=self.lr)
+
+		# learning rate steps specified in https://arxiv.org/pdf/1912.02175.pdf (A.3.1)
 		lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,40], gamma=0.1)
+
 		return [optimizer], [lr_scheduler]
 
 
@@ -153,28 +139,38 @@ class Combinatorial(pl.LightningModule):
 
 	def test_step(self, batch, batch_idx):
 
-		x_train, y_train, true_shortest_paths = batch
+		x_test, y_test, z_test = batch
         
 		# get the output from the CNN:
-		output = self.encoder(x_train)
+		output = self.encoder(x_test)
 		output = torch.abs(output)
 
 		weights = output.reshape(-1, output.shape[-1], output.shape[-1]) # reshape to match the path maps
 		assert len(weights.shape) == 3, f"{str(weights.shape)}" # double check dimensions
 		
 		# pass the predicted weights through the dijkstra algorithm:
-		predicted_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
+		suggested_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
         
-		# calculate the accuracy:
-		accuracy = torch.all(torch.eq(true_shortest_paths, predicted_paths),  dim=1).to(torch.float32).mean()
-		self.log('test_acc', accuracy)
+        true_paths = z_test.view(z_test.size()[0], -1)
+
+		accuracy = exact_match_accuracy(true_paths, suggested_paths)
+		self.log('exact match accuracy [test]', accuracy)
+
+		true_weights = y_test.view(y_test.size()[0], -1)
+		accuracy = exact_cost_accuracy(true_paths, suggested_paths, true_weights)
+		self.log('exact cost accuracy [test]', accuracy)
 
 		return
 
 
 	def configure_optimizers(self):
-		optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+
+		# should update this at some point to take optimizer from config file
+		optimizer    = torch.optim.Adam(self.parameters(), lr=self.lr)
+
+		# learning rate steps specified in https://arxiv.org/pdf/1912.02175.pdf (A.3.1)
 		lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,40], gamma=0.1)
+
 		return [optimizer], [lr_scheduler]
 
 
