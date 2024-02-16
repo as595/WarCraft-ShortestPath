@@ -7,8 +7,8 @@ model_dir: '/share/nas2/ascaife/warcraft/models/'    # directory to save trained
 [data]
 dataset: 'Warcraft12x12'                             # data set  
 datadir: '/share/nas2/ascaife/warcraft/data/'        # path to data 
-datamean: 0.                                         # data mean for normalisation transform
-datastd: 1.                                          # data std for normalisation transform
+datamean: (0.2411, 0.2741, 0.1212)                   # data mean for normalisation transform
+datastd: (0.1595, 0.0650, 0.1601)                    # data std for normalisation transform
 ntrain: 10000                                        # number of training inputs
 ntest: 1000                                          # number of test inputs
 
