@@ -58,7 +58,7 @@ Results:
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   |
 | Test accuracy | 38.7&pm;2.7%   |  6.0&pm;0.4%  | 301   | 283   |
 
-*Note: the reported values are "perfect cost match accuracy".*
+*Note: the reported values are "perfect match accuracy".*
 
 #### Training details
 
