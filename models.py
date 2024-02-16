@@ -151,7 +151,7 @@ class Combinatorial(pl.LightningModule):
 		# pass the predicted weights through the dijkstra algorithm:
 		suggested_paths = self.solver(weights, self.lambda_val, self.neighbourhood_fn) # only positional arguments allowed (no keywords)
         
-        true_paths = z_test.view(z_test.size()[0], -1)
+		true_paths = z_test.view(z_test.size()[0], -1)
 
 		accuracy = exact_match_accuracy(true_paths, suggested_paths)
 		self.log('exact match accuracy [test]', accuracy)
