@@ -60,12 +60,6 @@ Results:
 
 *Note: the reported values are "perfect match accuracy", calculated over 10 separately seeded runs.*
 
-#### Training details
-
-Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. *z*-score normalisation is applied to all inputs using the mean and standard deviation of the 10k training images, values for these parameters can be found in the `baseline.cfg` file.
-
-Training takes ~10 sec/epoch on an A100, and ~7 min/epoch on a CPU.
-
 ---
 ### Combinatorial Model
 
@@ -81,8 +75,18 @@ To run:
 python main.py --config ./configs/combinatorial.cfg
 ```
 
----
-### Notes
+Results: 
 
-* What happens to performance if you don't normalise the input data?
-* What happens if you don't implement the learning rate scheduler steps at epochs 30 and 40?
+|  | 12x12 | 18x18 | 24x24 | 30x30 |
+| :---:   | :---: | :---: | :---: | :---: |
+| Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
+| Test accuracy | 38.7&pm;2.7%   |  6.0&pm;0.4%  | 0.3&pm;0.1%   | 283   |
+
+*Note: the reported values are "perfect match accuracy", calculated over 10 separately seeded runs.*
+
+---
+### Training details
+
+Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. *z*-score normalisation is applied to all inputs using the mean and standard deviation of the 10k training images, values for these parameters can be found in the `baseline.cfg` file.
+
+Training takes approximately 7 (12x12) - 14 (30x30) sec/epoch on an A100, and ~7 min/epoch on a CPU.
