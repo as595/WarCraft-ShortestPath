@@ -57,7 +57,7 @@ Results:
 
 |  | 12x12 | 18x18 | 24x24 | 30x30 |
 | :---:   | :---: | :---: | :---: | :---: |
-| Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
+| Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 83.4&pm;1.9%   |
 | Test accuracy | 38.7&pm;2.7%   |  6.0&pm;0.4%  | 0.3&pm;0.1%   | 0.0&pm;0.0%   |
 
 <ins>Cost Match Accuracy</ins>
@@ -65,7 +65,7 @@ Results:
 |  | 12x12 | 18x18 | 24x24 | 30x30 |
 | :---:   | :---: | :---: | :---: | :---: |
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
-| Test accuracy | 38.7&pm;2.7%   |  9.5&pm;0.5%  | 1.4&pm;0.3%   | 283   |
+| Test accuracy | 38.7&pm;2.7%   |  9.5&pm;0.5%  | 1.4&pm;0.3%   | 0.4&pm;0.2%   |
 
 ---
 ### Combinatorial Model
