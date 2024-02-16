@@ -60,6 +60,10 @@ Results:
 
 *Note: the reported values are "perfect match accuracy".*
 
+#### Training details
+
+Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. 
+
 ---
 ### Combinatorial Model
 
