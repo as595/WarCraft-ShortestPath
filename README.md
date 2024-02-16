@@ -88,15 +88,15 @@ Results:
 
 |  | 12x12 | 18x18 | 24x24 | 30x30 |
 | :---:   | :---: | :---: | :---: | :---: |
-| Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
-| Test accuracy | 85.8&pm;0.5   |  6.0&pm;0.4%  | 0.3&pm;0.1%   | 283   |
+| Training accuracy | 100.0&pm;0.0%   | 99.9&pm;0.1%   | 95.8&pm;1.6%   | 100.0&pm;0.0%   |
+| Test accuracy | 85.8&pm;0.5   |  75.0&pm;0.8%  | 0.3&pm;0.1%   | 283   |
 
 <ins>Cost Match Accuracy</ins>
 
 |  | 12x12 | 18x18 | 24x24 | 30x30 |
 | :---:   | :---: | :---: | :---: | :---: |
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   |
-| Test accuracy | 97.1&pm;0.4%   |  9.5&pm;0.5%  | 1.4&pm;0.3%   | 0.4&pm;0.2%   |
+| Test accuracy | 97.1&pm;0.4%   |  97.5&pm;0.3%  | 1.4&pm;0.3%   | 0.4&pm;0.2%   |
 
 ---
 ### Training details
