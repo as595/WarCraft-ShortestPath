@@ -153,6 +153,7 @@ class Combinatorial(pl.LightningModule):
         
 		true_paths = z_test.view(z_test.size()[0], -1)
 		suggested_paths = suggested_paths.view(suggested_paths.size()[0], -1)
+		print(true_paths.shape, suggested_paths.shape)
 		
 		accuracy = exact_match_accuracy(z_test, suggested_paths)
 		self.log('exact match accuracy [test]', accuracy)
