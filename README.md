@@ -43,7 +43,7 @@ pl.show()
 ---
 ### Baseline Model
 
-The baseline model uses [PyTorch ResNet18](https://pytorch.org/hub/pytorch_vision_resnet/), which is trained from scratch to predict the shortest path directly from the input WarCraft Images (i.e. not from the weights). This model should train to 100% (training) accuracy in a few epochs. The parameters are specified in a `config` file: `configs/baseline.cfg`.
+The baseline model uses [PyTorch ResNet18](https://pytorch.org/hub/pytorch_vision_resnet/), which is trained from scratch to predict the shortest path directly from the input WarCraft Images (i.e. not from the weights). This model should train to 100% (training) accuracy in a few epochs. The parameters are specified in a `config` file: `configs/baseline.cfg`. 
 
 To run:
 
@@ -62,7 +62,7 @@ Results:
 
 #### Training details
 
-Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. 
+Models are trained on 10k input images of each type and tested on a reserved test set of 1k images. Training parameters are as described in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175) and can be found in the `baseline.cfg` file. *z*-score normalisation is applied to all inputs using the mean and standard deviation of the 10k training images, values for these parameters can be found in the `baseline.cfg` file.
 
 ---
 ### Combinatorial Model
