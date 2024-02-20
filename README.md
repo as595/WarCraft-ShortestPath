@@ -65,6 +65,8 @@ Results:
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   |
 | Test accuracy | 38.7&pm;2.7%   |  9.5&pm;0.5%  | 1.4&pm;0.3%   | 0.4&pm;0.2%   |
 
+*Uncertainties are the standard deviation across 10 repeats.*
+
 ---
 ### Combinatorial Model
 
@@ -95,6 +97,8 @@ Results:
 | :---:   | :---: | :---: | :---: | :---: |
 | Training accuracy | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   | 100.0&pm;0.0%   |
 | Test accuracy | 97.1&pm;0.4%   |  97.5&pm;0.3%  | 97.3&pm;0.3%   | 97.4&pm;0.3%   |
+
+*Uncertainties are the standard deviation across 10 repeats.*
 
 ---
 ### Training details
