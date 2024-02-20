@@ -105,4 +105,4 @@ Models are trained on 10k input images of each type and tested on a reserved tes
 
 The Baseline training takes approximately 7 (12x12) - 14 (30x30) sec/epoch on an A100, and ~7 min/epoch on a CPU.
 
-The Combinatorial training takes approximately 50 (12x12) - ?? sec/epoch on an A100 without parallelisation of the combinatorial solver.
+The Combinatorial training takes approximately 50 (12x12) - 330 (30x30) sec/epoch on an A100 without parallelisation of the combinatorial solver.
