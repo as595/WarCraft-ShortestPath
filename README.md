@@ -10,9 +10,7 @@ This implementation uses [PyTorch Lightning](https://lightning.ai/docs/pytorch/s
 
 ## tl;dr
 
-The results look like this
-
-![alt text](https://github.com/as595/WarCraft-ShortestPath/blob/d49c465fab5691eadfd752be189cbd8b9e265ea7/figures/results.png)
+![alt text](https://github.com/as595/WarCraft-ShortestPath/blob/main/figures/results.png)
 
 ---
 ### Warcraft Data
