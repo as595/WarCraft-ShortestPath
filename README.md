@@ -109,3 +109,7 @@ The Combinatorial training takes approximately 50 (12x12) - 330 (30x30) sec/epoc
 ### Results
 
 ![alt text](https://github.com/as595/WarCraft-ShortestPath/blob/main/figures/results.png)
+
+The results are broadly consistent with Table 2 in [Vlastelica, Marin, et al.](https://arxiv.org/abs/1912.02175), but in general I find slightly higher performance for both the Baseline and Combinatorial (Dijkstra) models. Not sure why that is  (I don't do any additional tuning). 
+
+
