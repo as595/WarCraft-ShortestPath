@@ -4,6 +4,9 @@ from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 from torch.utils.data import Subset
 
+import torch_geometric
+from torch_geometric.typing import WITH_TORCH_SPLINE_CONV
+
 import wandb
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
@@ -18,9 +21,13 @@ import psutil
 
 from utils import *
 from models import Baseline, Combinatorial
-from WarCraft import Warcraft12x12, Warcraft18x18, Warcraft24x24, Warcraft30x30
+from WarCraftGraph import Warcraft12x12
 
 import platform
+
+
+if not WITH_TORCH_SPLINE_CONV:
+    quit("This example requires 'torch-spline-conv'")
 
 if platform.system()=='Darwin':
 	os.environ["GLOO_SOCKET_IFNAME"] = "en0"
@@ -70,7 +77,7 @@ if __name__ == "__main__":
 			}
 
 	# initialise the wandb logger and name your wandb project
-	wandb_logger = pl.loggers.WandbLogger(project='warcraft', log_model=True, config=config)
+	wandb_logger = pl.loggers.WandbLogger(project='warcraft-graph', log_model=True, config=config)
 	wandb_config = wandb.config
 
 # -----------------------------------------------------------------------------
@@ -82,7 +89,7 @@ if __name__ == "__main__":
 
 	# data transforms
 	totensor = transforms.ToTensor()
-	normalise= transforms.Normalize(config_dict['data']['datamean'], config_dict['data']['datastd'])
+	normalise= transforms.Normalize(0,1)
 	
 	transform = transforms.Compose([
 		totensor, 
@@ -90,46 +97,39 @@ if __name__ == "__main__":
 		])
 
 	print("Data: {}".format(config_dict['data']['dataset']))
-	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=True, transform=transform)
-	test_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'], train=False, transform=transform)
+	train_data = locals()[config_dict['data']['dataset']](config_dict['data']['datadir'])
 	
-	# take 10k samples for training; 1k samples for test
+	# take 9k samples for training; 1k samples for test
 	n_train = config_dict['data']['ntrain']
 	n_test = config_dict['data']['ntest']
 	indices = list(range(len(train_data)))
-	
-	train_sampler = Subset(train_data, indices[:n_train]) # 10k samples
-	test_sampler = Subset(test_data, indices[:n_test])    # 1k samples
+
+	train_sampler = Subset(train_data, indices[:n_train])   # 9k samples
+	test_sampler = Subset(train_data, indices[n_train:])    # 1k samples
 
 	# specify data loaders for training and validation:
-	train_loader = torch.utils.data.DataLoader(train_sampler, 
-												batch_size=config_dict['training']['batch_size'], 
-												shuffle=True, 
-												num_workers=num_cpus-1,
-												persistent_workers=True
-												)
+	train_loader = torch_geometric.loader.DataLoader(train_sampler, 
+													 batch_size=config_dict['training']['batch_size'], 
+													 shuffle=True, 
+													 num_workers=num_cpus-1, 
+													 persistent_workers=True)
 
-	test_loader = torch.utils.data.DataLoader(test_sampler, 
-												batch_size=len(test_sampler), 
-												shuffle=False, 
-												num_workers=num_cpus-1,
-												persistent_workers=True
-												)
+	test_loader = torch_geometric.loader.DataLoader(test_sampler, 
+													batch_size=config_dict['training']['batch_size'], 
+													shuffle=False, 
+													num_workers=num_cpus-1, 
+													persistent_workers=True)
 
 # -----------------------------------------------------------------------------
 
 	print("Model: {} ({})".format(config_dict['model']['model_name'], device))
-	model = locals()[config_dict['model']['model_name']](
-														train_data.metadata["output_features"], 
-														train_data.metadata["num_channels"],
-														config_dict['optimizer']['lr'],
-														config_dict['training']['l1_regconst'],
-														config_dict['training']['lambda_val'],
-														config_dict['training']['neighbourhood_fn']
-														).to(device)
-
-	#if not quiet:
-	#    summary(model, (train_data.metadata["num_channels"], train_data.metadata["input_image_size"], train_data.metadata["input_image_size"]))
+	model = locals()[config_dict['model']['model_name']](12**2,
+                                                         train_data.num_features,
+														 config_dict['optimizer']['lr'],
+                                                         config_dict['training']['l1_regconst'],
+                                                         config_dict['training']['lambda_val'],
+                                                         config_dict['training']['neighbourhood_fn']
+                                                         ).to(device)
 
 # -----------------------------------------------------------------------------
 
